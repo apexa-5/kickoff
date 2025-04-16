@@ -33,7 +33,7 @@ def image_view(request):
 
 def image_upload(request):
     if request.method == 'POST':
-        images = request.FILES('images')
+        images = request.FILES.getlist('image')
         print(images,"898989898989898989")
         costume_id = request.POST['costume']
         costume = Costume.objects.get(id=costume_id)
@@ -43,7 +43,7 @@ def image_upload(request):
 
         return HttpResponse('Images uploaded successfully')
     costumes = Costume.objects.all()
-    return render(request, 'image_upload.html', {'costumes': costumes})
+    return render(request, 'users/image_upload.html', {'costumes': costumes})
 
 
 class CostumeCRUD(viewsets.ModelViewSet):
