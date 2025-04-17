@@ -9,7 +9,6 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 # from rest_framework import status
 from .serializers import *
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Category,Costume,Image
 from rest_framework.decorators import api_view, permission_classes
 
@@ -22,28 +21,30 @@ class Signup(APIView):
         return Response(serializer.errors)
 
 class Login(TokenObtainPairView):
-    serializer_class = TokenObtainPairSerializer
+    serializer_class = CustomTokenSerializer
 
 
 def image_view(request):
-    costumes = Category.objects.all()
-    return render(request,'users/image_upload.html',{'costumes': costumes})
+    costumes = Category.objects.prefetch_related('costume_set').all()
+    return render(request, 'users/image_upload.html', {'costumes': costumes})
 
 
 
 def image_upload(request):
     if request.method == 'POST':
         images = request.FILES.getlist('image')
-        print(images,"898989898989898989")
-        costume_id = request.POST['costume']
-        costume = Costume.objects.get(id=costume_id)
+        category_id = request.POST['costume']
+        print(category_id,"category_id")
+        costume = Costume.objects.get(id=category_id)
+        print(costume,"9880980980898098989")
 
         for image in images:
             Image.objects.create(costume=costume, image=image)
 
         return HttpResponse('Images uploaded successfully')
-    costumes = Costume.objects.all()
-    return render(request, 'users/image_upload.html', {'costumes': costumes})
+    costumes = Category.objects.all()
+    return render(request, 'users/image_upload.html',{'costumes': costumes})
+
 
 
 class CostumeCRUD(viewsets.ModelViewSet):
@@ -60,7 +61,7 @@ def view_packages(request):
     return Response(serializer.data)
 
 @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def book_costume(request):
     serializer = BookingSerializer(data=request.data)
     if serializer.is_valid():
@@ -75,4 +76,5 @@ def book_costume(request):
         serializer.save(user=request.user)
         return Response({'message': 'Costume booked succesfully '})
     return Response(serializer.errors, status=400)
+
 

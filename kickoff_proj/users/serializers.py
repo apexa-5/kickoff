@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import *
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -20,12 +22,29 @@ class CostumeSerializer(serializers.ModelSerializer):
 
 
 class PackageSerializer(serializers.ModelSerializer):
+    costumes = CostumeSerializer(many=True)
+
     class Meta:
         model = Package
-        fields = '__all__'
+        fields = ['id', 'name', 'description', 'original_price', 'offer_price', 'costumes']
+
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = ['id', 'costume', 'start_date', 'end_date']  
+
+
+class CustomTokenSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        data['user'] = {
+            'id': self.user.id,
+            'email': self.user.email,
+            
+           
+        }
+
+        return data
 
