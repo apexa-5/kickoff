@@ -1,28 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h2>Image Upload</h2>
-<form method="post"  action="{% url 'image_upload' %}" enctype="multipart/form-data">
+<form method="post" action="{% url 'image_upload' %}" enctype="multipart/form-data">
     {% csrf_token %}
+    
+    <label>Select Images:</label>
     <input type="file" name="image" multiple required><br><br>
 
-    <label for="costume">Choose a costume:</label>
-    <select name="costume" id="costume" required>
-        {{costumes.name}} 0000
-        {% for costume in costumes %}
-            <option value="{{ costume.id }}">{{ costume}}</option>
+    <label>Select Costume:</label>
+    <select name="costume" required>
+        {% for category in costumes %}
+            <optgroup label="{{ category.category_name }}">
+                {% for costume in category.costume_set.all %}
+                    <option value="{{ costume.id }}">{{ costume.name }}</option>
+                {% endfor %}
+            </optgroup>
         {% endfor %}
     </select><br><br>
 
     <button type="submit">Upload</button>
 </form>
-</body>
-<!-- 
-from users.models import Category, Costume
-
-cat = Category.objects.create(name="Fantasy") -->
