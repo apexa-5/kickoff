@@ -85,9 +85,10 @@ import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://postgres:hello123@db:5432/my_db'
+        default='postgres://postgres:hello123@localhost:5432/my_db'
     )
 }
+
 
 
 
