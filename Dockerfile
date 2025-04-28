@@ -1,20 +1,29 @@
-# Use Python 3.9 as the base image
-FROM python:3.9-slim
+FROM python:3.10-slim
 
-# Set the working directory
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    python3-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    build-essential \
+    && apt-get clean
+
+# Set work directory
 WORKDIR /app
 
-# Copy the requirements.txt into the container
-COPY requirements.txt /app/
-
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install -r requirements.txt
 
-# Copy the rest of the project files
-COPY . /app/
+# Copy project
+COPY . .
 
-# Expose port 8000
-EXPOSE 8000
-
-# Run the Django app
+# Default command
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

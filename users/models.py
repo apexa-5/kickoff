@@ -18,24 +18,26 @@ class UserProfileManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
-    name = models.CharField(max_length=30, blank=True,null=True)
-    is_active = models.BooleanField(default=True,null=True)
+    name = models.CharField(max_length=30, blank=True, null=True)
+    is_active = models.BooleanField(default=True, null=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now_add=True,null=True)
+    date_joined = models.DateTimeField(auto_now_add=True, null=True)
+
+    # Related fields that need unique related names to avoid conflicts
+    groups = models.ManyToManyField('auth.Group', related_name='userprofile_groups', blank=True)
+    user_permissions = models.ManyToManyField('auth.Permission', related_name='userprofile_permissions', blank=True)
 
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ['first_name', 'last_name']  # Additional fields required for superuser
+    # REQUIRED_FIELDS = ['first_name', 'last_name']  # Uncomment and add additional fields required for superuser
 
     def __str__(self):
-        return self.email
-    
+        return self.email  
 
 choices = (
    ('Gown','Gown'),
