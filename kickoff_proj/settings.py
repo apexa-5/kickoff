@@ -81,16 +81,12 @@ WSGI_APPLICATION = 'kickoff_proj.wsgi.application'
 # }
 
 
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'my_db',
-        'USER': 'postgres',
-        'PASSWORD': 'hello123',
-        'HOST': 'db',
-        'PORT': '5432',
-        
-    }
+    'default': dj_database_url.config(
+        default='postgres://postgres:hello123@db:5432/my_db'
+    )
 }
 
 
