@@ -2,30 +2,6 @@ __pycache__/
 *.pyc
 *.pyo
 .venv/
+env/
 *.sqlite3
 .env
-
-
-
-kickoff_proj/
-├── .gitignore
-├── Dockerfile
-├── docker-compose.yml
-├── env/
-├── kickoff_proj/
-│   ├── __init__.py
-│   ├── settings.py
-│   ├── urls.py
-│   ├── wsgi.py
-│   ├── asgi.py
-├── users/
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py
-│   ├── views.py
-│   ├── migrations/
-├── manage.py
-├── requirements.txt
-├── Procfile
-├── runtime.txt
