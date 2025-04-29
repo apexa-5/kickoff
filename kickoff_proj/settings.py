@@ -81,16 +81,14 @@ WSGI_APPLICATION = 'kickoff_proj.wsgi.application'
 # }
 
 
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'my_db',
-        'USER': 'postgres',
-        'PASSWORD': 'hello123',
-        'HOST': 'db',
-        'PORT': '5432',
-        
-    }
+    'default': dj_database_url.config(
+        default="postgresql://kickoff_db_user:nGXGlwg2w2hnDRCtgAQptHyoEjmX6lUF@dpg-d086u4vgi27c7387qo9g-a/kickoff_db",
+        conn_max_age=600,  # keeps DB connections alive
+        ssl_require=True   # important for production
+    )
 }
 
 
