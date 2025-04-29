@@ -85,10 +85,11 @@ import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://postgres:hello123@localhost:5432/my_db'
+        default="postgresql://kickoff_db_user:nGXGlwg2w2hnDRCtgAQptHyoEjmX6lUF@dpg-d086u4vgi27c7387qo9g-a/kickoff_db",
+        conn_max_age=600,  # keeps DB connections alive
+        ssl_require=True   # important for production
     )
 }
-
 
 
 
