@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    image: postgres:13
+    image: postgres:14
     environment:
       POSTGRES_DB: my_db
       POSTGRES_USER: postgres
@@ -16,7 +16,7 @@ services:
     build: .
     command: gunicorn kickoff_proj.wsgi:application --bind 0.0.0.0:8000
     environment:
-      - DATABASE_URL=postgres://postgres:hello123@db:5432/my_db
+      DATABASE_URL: postgres://postgres:hello123@db:5432/my_db
     depends_on:
       - db
     volumes:
