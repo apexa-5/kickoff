@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUserManager
+from django.conf import settings
+
 
 class UserProfileManager(BaseUserManager):
     def create_user(self, email, password=None,name=None):
@@ -93,3 +95,13 @@ class Booking(models.Model):
 
     def __str__(self):
         return f'{self.user.email} booked {self.costume.name}'
+
+ 
+class Review(models.Model):
+    costume = models.ForeignKey(Costume, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    comment = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.costume} ({self.rating})"

@@ -11,30 +11,23 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-((_h-$sm_0zp@e=%@-4u_(9f#&nygiou#1!zb)7mw6&%@_pemk'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
 
 import os
 
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','0.0.0.0']
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -87,21 +80,34 @@ WSGI_APPLICATION = 'kickoff_proj.wsgi.application'
 # }
 
 
+
+
 import dj_database_url
+import os
+
+# is_production = os.getenv("DJANGO_PRODUCTION", "False") == "True"
+
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=os.getenv("DATABASE_URL"),
+#         conn_max_age=600,
+#         ssl_require=is_production
+#     )
+# }
+
+
+
+is_production = config("DJANGO_PRODUCTION", default=False, cast=bool)
 
 DATABASES = {
     'default': dj_database_url.config(
-        default="postgresql://kickoff_db_user:nGXGlwg2w2hnDRCtgAQptHyoEjmX6lUF@dpg-d086u4vgi27c7387qo9g-a/kickoff_db",
-        conn_max_age=600,  # keeps DB connections alive
-        ssl_require=True   # important for production
+        default=config('DATABASE_URL', default='postgres://postgres:hello123@localhost:5432/postgres'),
+        conn_max_age=600,
+        ssl_require=False  # Set to True if using production
     )
 }
 
 
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -132,11 +138,14 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# settings.py
+PAYPAL_CLIENT_ID = 'AXtQCy3RjPJrNeDoAAPc_XYthDrKCOLTO4vwetdbGZdugvzPm5XYvtpDy5wagYGP_DcMCideMggxnisf'
+PAYPAL_CLIENT_SECRET = 'EMf1jlxKA7nNEntpwSUQncf3P43xUnaoCe42x0siW3unjTil3KK1iEJ7w5QFchLJMGdGxa_WxdWE9xZ-'
+PAYPAL_BASE_URL = 'https://api-m.sandbox.paypal.com'  # Use sandbox first

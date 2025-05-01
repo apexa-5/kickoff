@@ -46,3 +46,9 @@ class CustomTokenSerializer(TokenObtainPairSerializer):
         }
 
         return data
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'costume', 'user', 'rating', 'comment']

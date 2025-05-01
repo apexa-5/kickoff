@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import viewsets
+from rest_framework import viewsets,generics, permissions
 from .tasks import test_func
 from django.http import HttpResponse
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
@@ -10,6 +10,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Category,Costume,Image
 from rest_framework.decorators import api_view, permission_classes
 from .permissions import IsCustomerUser,IsAdminUserStaff,IsBookingOwner
+
+
+import sys
+print("Python executable:", sys.executable)
+
 
 class Signup(APIView):
     def post(self, request):
@@ -119,3 +124,75 @@ def my_bookings(request):
     bookings = Booking.objects.filter(user=request.user)
     serializer = BookingSerializer(bookings, many=True)
     return Response(serializer.data)
+
+
+# views.py
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .paypal_utils import get_paypal_access_token
+from django.conf import settings
+import requests
+
+@api_view(['POST'])
+def create_paypal_order(request):
+    access_token = get_paypal_access_token()
+    url = f'{settings.PAYPAL_BASE_URL}/v2/checkout/orders'
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    data = {
+        "intent": "CAPTURE",
+        "purchase_units": [{
+            "amount": {
+                "currency_code": "USD",
+                "value": "10.00"  # dynamic value if needed
+            }
+        }],
+        "application_context": {
+           "return_url": "http://localhost:8000/paypal-success/",
+            "cancel_url": "http://localhost:8000/paypal-cancel/"
+
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    return Response(response.json())
+
+
+
+@api_view(['POST'])
+def capture_paypal_order(request):
+    order_id = request.data.get('order_id')  # Get order_id from frontend/mobile
+    access_token = get_paypal_access_token()
+
+    url = f'{settings.PAYPAL_BASE_URL}/v2/checkout/orders/{order_id}/capture'
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    response = requests.post(url, headers=headers)
+    return Response(response.json())
+
+
+def paypal_success(request):
+    token = request.GET.get("token")
+    payer_id = request.GET.get("PayerID")
+    
+    # Use the token to capture the payment via PayPal API here
+    return HttpResponse("Payment successful!")
+
+def paypal_cancel(request):
+    return HttpResponse("Payment canceled.")
+
+
+class ReviewListCreateView(generics.ListCreateAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

@@ -1,0 +1,19 @@
+<form method="post" action="{% url 'image_upload' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <label>Select Images:</label>
+    <input type="file" name="image" multiple required><br><br>
+
+    <label>Select Costume:</label>
+    <select name="costume" required>
+        {% for category in costumes %}
+            <optgroup label="{{ category.category_name }}">
+                {% for costume in category.costume_set.all %}
+                    <option value="{{ costume.id }}">{{ costume.name }}</option>
+                {% endfor %}
+            </optgroup>
+        {% endfor %}
+    </select><br><br>
+
+    <button type="submit">Upload</button>
+</form>
